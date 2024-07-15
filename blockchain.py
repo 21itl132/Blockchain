@@ -10,6 +10,9 @@ class Block:
         self.data = data
         self.hash = hash
 
+    def __repr__(self):
+        return json.dumps(self.__dict__, indent=4)
+
 class Blockchain:
     def __init__(self):
         self.chain = []
@@ -33,7 +36,9 @@ class Blockchain:
         return Block(**block)
 
     def hash_block(self, block):
-        block_string = json.dumps(block, sort_keys=True).encode()
+        block_copy = block.copy()
+        block_copy['hash'] = ''
+        block_string = json.dumps(block_copy, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
 
     def add_data(self, data):
@@ -44,8 +49,6 @@ class Blockchain:
         self.current_data.append(timestamped_data)
 
     def mine_block(self):
-        if not self.chain:
-            raise ValueError('Genesis block not found.')
         last_block = self.chain[-1]
         new_block = self.create_block(last_block.hash)
         self.chain.append(new_block)
